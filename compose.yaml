@@ -1,0 +1,32 @@
+name: gemini-watermark-remover
+
+services:
+  web:
+    image: gemini-watermark-remover-web:local
+    build:
+      context: .
+      target: web
+    ports:
+      - "${GWR_PORT:-4173}:80"
+    restart: unless-stopped
+    read_only: true
+    tmpfs:
+      - /var/cache/nginx
+      - /var/run
+      - /tmp
+    security_opt:
+      - no-new-privileges:true
+  cli:
+    profiles:
+      - cli
+    image: gemini-watermark-remover-cli:local
+    build:
+      context: .
+      target: cli
+    working_dir: /data
+    volumes:
+      - "${GWR_DATA_DIR:-./data}:/data"
+    command:
+      - --help
+    security_opt:
+      - no-new-privileges:true
