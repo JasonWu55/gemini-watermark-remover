@@ -9,10 +9,11 @@
 
 ## Web UI
 
-建置並在背景啟動：
+從 GHCR 拉取已建置的 image，並在背景啟動：
 
 ```bash
-docker compose up -d --build web
+docker compose pull web
+docker compose up -d web
 ```
 
 瀏覽器開啟 <http://localhost:4173>。圖片與影片由瀏覽器本機處理，不會上傳至容器。
@@ -20,7 +21,7 @@ docker compose up -d --build web
 若要更換對外連接埠：
 
 ```bash
-GWR_PORT=8080 docker compose up -d --build web
+GWR_PORT=8080 docker compose up -d web
 ```
 
 查看狀態與紀錄：
@@ -36,13 +37,19 @@ docker compose logs -f web
 docker compose down
 ```
 
+若要從目前 checkout 的原始碼自行建置：
+
+```bash
+docker compose -f compose.yaml -f compose.build.yaml up -d --build web
+```
+
 ## CLI
 
 先建立資料目錄，並把待處理檔案放進去：
 
 ```bash
 mkdir -p data
-docker compose build cli
+docker compose pull cli
 docker compose run --rm cli remove /data/input.png --output /data/output.png
 ```
 
@@ -63,6 +70,30 @@ GWR_DATA_DIR=/absolute/path/to/files \
 
 ```bash
 docker compose run --rm cli --help
+```
+
+## GitHub Container Registry
+
+`.github/workflows/docker-publish.yml` 會在以下時機建置 Docker image：
+
+- `main` 有新 commit，包括自動同步上游後的 commit
+- 推送 `v*` tag
+- 從 GitHub Actions 手動執行
+- Pull request 會進行建置驗證，但不推送 image
+
+每次發布會同時產生 `linux/amd64` 與 `linux/arm64` image：
+
+```text
+ghcr.io/jasonwu55/gemini-watermark-remover-web:latest
+ghcr.io/jasonwu55/gemini-watermark-remover-cli:latest
+```
+
+GHCR 第一次建立的 package 預設為 Private。第一次 Action 成功後，請到 GitHub 個人頁面的 **Packages**，分別開啟兩個 package 的 **Package settings**，把 **Change visibility** 設為 Public，之後 Compose 才能免登入直接拉取。
+
+若暫時維持 Private，部署主機必須先登入：
+
+```bash
+echo "$GHCR_TOKEN" | docker login ghcr.io -u JasonWu55 --password-stdin
 ```
 
 ## 同步上游

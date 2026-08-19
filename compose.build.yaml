@@ -1,0 +1,13 @@
+services:
+  web:
+    image: gemini-watermark-remover-web:local
+    build:
+      context: .
+      target: web
+
+  cli:
+    image: gemini-watermark-remover-cli:local
+    build:
+      context: .
+      target: cli
+

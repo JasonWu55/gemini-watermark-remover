@@ -2,10 +2,7 @@ name: gemini-watermark-remover
 
 services:
   web:
-    image: gemini-watermark-remover-web:local
-    build:
-      context: .
-      target: web
+    image: ghcr.io/jasonwu55/gemini-watermark-remover-web:latest
     ports:
       - "${GWR_PORT:-4173}:80"
     restart: unless-stopped
@@ -19,10 +16,7 @@ services:
   cli:
     profiles:
       - cli
-    image: gemini-watermark-remover-cli:local
-    build:
-      context: .
-      target: cli
+    image: ghcr.io/jasonwu55/gemini-watermark-remover-cli:latest
     working_dir: /data
     volumes:
       - "${GWR_DATA_DIR:-./data}:/data"
