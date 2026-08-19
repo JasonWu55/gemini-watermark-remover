@@ -13,6 +13,19 @@ services:
       - /tmp
     security_opt:
       - no-new-privileges:true
+  api:
+    image: ghcr.io/jasonwu55/gemini-watermark-remover-api:latest
+    ports:
+      - "${GWR_API_PORT:-3000}:3000"
+    environment:
+      GWR_API_TOKEN: "${GWR_API_TOKEN:-}"
+      GWR_API_MAX_BYTES: "${GWR_API_MAX_BYTES:-20971520}"
+    restart: unless-stopped
+    read_only: true
+    tmpfs:
+      - /tmp
+    security_opt:
+      - no-new-privileges:true
   cli:
     profiles:
       - cli

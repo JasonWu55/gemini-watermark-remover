@@ -7,6 +7,7 @@
   "files": [
     "bin/",
     "skills/",
+    "src/api/",
     "src/cli/",
     "src/core/",
     "src/runtime/",
@@ -170,6 +171,8 @@
     "render:video-comparison-grid": "node scripts/render-video-comparison-grid.js",
     "package:extension": "node scripts/package-extension-release.js",
     "cli:smoke": "node bin/gwr.mjs --help",
+    "api:start": "node src/api/server.js",
+    "api:test": "node --test tests/api/**/*.test.js",
     "serve": "pnpm dlx serve dist",
     "export:samples": "node scripts/export-fixed-samples.js",
     "calibrate:preview-alpha": "node scripts/calibrate-preview-alpha.js",

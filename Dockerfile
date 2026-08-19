@@ -31,7 +31,7 @@ HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 \
     CMD wget -qO- http://127.0.0.1/healthz || exit 1
 
 
-FROM node:22-bookworm-slim AS cli
+FROM node:22-bookworm-slim AS runtime
 
 ENV NODE_ENV=production
 ENV PNPM_HOME=/pnpm
@@ -48,6 +48,24 @@ RUN --mount=type=cache,id=pnpm-cli,target=/pnpm/store \
     pnpm add /tmp/package.tgz sharp@0.34.5 \
     && rm /tmp/package.tgz \
     && pnpm store prune
+
+USER node
+
+
+FROM runtime AS api
+
+ENV HOST=0.0.0.0
+ENV PORT=3000
+
+EXPOSE 3000
+
+HEALTHCHECK --interval=30s --timeout=5s --start-period=15s --retries=3 \
+    CMD ["node", "-e", "fetch('http://127.0.0.1:3000/healthz').then(r=>{if(!r.ok)process.exit(1)}).catch(()=>process.exit(1))"]
+
+CMD ["node", "/app/node_modules/@pilio/gemini-watermark-remover/src/api/server.js"]
+
+
+FROM runtime AS cli
 
 WORKDIR /data
 

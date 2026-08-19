@@ -5,9 +5,14 @@ services:
       context: .
       target: web
 
+  api:
+    image: gemini-watermark-remover-api:local
+    build:
+      context: .
+      target: api
+
   cli:
     image: gemini-watermark-remover-cli:local
     build:
       context: .
       target: cli
-
